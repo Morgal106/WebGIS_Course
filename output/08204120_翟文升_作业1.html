@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<script type="text/javascript">
+  function father() {
+    this.name = "";
+    this.number = "";
+    this.setName = (name) => {
+      this.name = name;
+    }
+    this.setNumber = (number) => {
+      this.number = number;
+    }
+  }
+  function son() {
+    this.age = "";
+    this.setAge = (age) => {
+      this.age = age;
+    }
+  }
+  son.prototype = new father();
+
+  function run() {
+    let obj = new son();
+    obj.setAge(10);
+    obj.setName("张三");
+    obj.setNumber("1232545324");
+    document.getElementById("output").innerHTML = obj.name + "|" + obj.age + "|" + obj.number;
+  }
+</script>
+
+<body>
+  <input type="button" onclick="run()" value="点我">
+  <p id="output"></p>
+</body>
+
+</html>

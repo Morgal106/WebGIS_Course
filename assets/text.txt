@@ -1,0 +1,1 @@
+使用XMLHttpRequest请求到的文本

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    let obj = new Object();
+    obj.name = "新闻周刊";
+    obj.articles = [
+        {
+            title: "新闻一",
+            authors: [
+                "张三",
+                "李四",
+                "王五",
+            ],
+            date: "2023-03-03"
+        },
+        {
+            title: "新闻二",
+            authors: [
+                "张三",
+                "李四",
+                "王五",
+            ],
+            date: "2023-03-08"
+        },
+        {
+            title: "新闻三",
+            authors: [
+                "张三",
+                "李四",
+                "王五",
+            ],
+            date: "2023-03-01"
+        },
+    ];
+    function run() {
+        document.getElementById("output").innerHTML = JSON.stringify(obj);
+    }
+</script>
+<body>
+    <input type="button" value="点我" onclick="run()">
+    <p id="output"></p>
+</body>
+</html>

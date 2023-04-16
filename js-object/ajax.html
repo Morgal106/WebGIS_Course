@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  function run() {
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = () => {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+        document.getElementById("output").innerHTML = xmlHttp.responseText;
+      }
+    }
+    xmlHttp.open("GET","../assets/text.txt",true);
+    xmlHttp.send();
+  }
+</script>
+<body>
+  <input type="button" value="点我" onclick="run()">
+  <p id="output"></p>
+</body>
+</html>

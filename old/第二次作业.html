@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOREM</title>
+  <style>
+    body {
+      background-color: #010409;
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    div.background {
+      display: grid;
+      padding: 0;
+    }
+
+    div.header {
+      width: auto;
+      height: 50px;
+      background-color: #0d0f12;
+    }
+
+    .header,
+    .side,
+    .content,
+    .bottum {
+      background-color: #111418;
+      border: 1px solid darkgoldenrod;
+      border-radius: 5px;
+    }
+
+    .bottum {
+      margin-top: 10px;
+      height: 50px;
+      padding: 10px;
+    }
+
+    .side>ul {
+      list-style-type: none;
+    }
+
+    .side a:link {
+      color: white;
+    }
+
+    .side a:visited {
+      color: gray;
+    }
+
+    .side a:hover {
+      font-size: 20px;
+    }
+
+    h1 {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: larger;
+    }
+
+    div.left-header {
+      padding-top: 5px;
+      padding-left: 5px;
+      margin-top: 5px;
+      margin-left: 5px;
+    }
+
+    .left-header>span {
+      font-size: 30px;
+      font-weight: bolder;
+    }
+
+    div.main {
+      display: grid;
+      grid-template-columns: 1fr 4fr;
+      position: relative;
+      top: 5px;
+    }
+
+    div.content {
+      margin-left: 5px;
+      padding: 20px;
+    }
+
+    div.side {
+      padding: 10px;
+      align-items: center;
+    }
+
+    #first-paragraph::first-letter {
+      font-size: 2em;
+      float: left;
+      margin: 0 .2em 0 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="background">
+    <div class="header">
+      <div class="left-header">
+        <span class="logo"></span>
+        <span class="title">HEADER</span>
+      </div>
+      <div class="right-header">
+        <div></div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="side">
+        <div class="side-header" style="border-bottom: 1px solid darkgoldenrod;">
+          <span>SIDEBAR-TITLE</span>
+        </div>
+        <ul>
+          <li>
+            <a href="#">Foobar</a>
+          </li>
+          <li>
+            <a href="#">Foobar</a>
+          </li>
+          <li>
+            <a href="#">Foobar</a>
+          </li>
+          <li>
+            <a href="#">Foobar</a>
+          </li>
+          <li>
+            <a href="#">Foobar</a>
+          </li>
+          <li>
+            <a href="#">Foobar</a>
+          </li>
+        </ul>
+      </div>
+      <div class="content">
+        <h1>LOREM</h1>
+        <p id="first-paragraph">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit dignissimos, officia
+          quisquam natus ratione
+          possimus, molestias, voluptas enim in repellendus accusantium cupiditate! Porro, placeat consectetur! Ea
+          architecto culpa illo minus!</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatibus rerum quod tempore ipsam incidunt?
+          Deserunt fugit odit possimus numquam repellat velit omnis incidunt voluptatibus eos, aspernatur assumenda
+          sint, dolores sit.</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatibus rerum quod tempore ipsam incidunt?
+          Deserunt fugit odit possimus numquam repellat velit omnis incidunt voluptatibus eos, aspernatur assumenda
+          sint, dolores sit.</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatibus rerum quod tempore ipsam incidunt?
+          Deserunt fugit odit possimus numquam repellat velit omnis incidunt voluptatibus eos, aspernatur assumenda
+          sint, dolores sit.</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatibus rerum quod tempore ipsam incidunt?
+          Deserunt fugit odit possimus numquam repellat velit omnis incidunt voluptatibus eos, aspernatur assumenda
+          sint, dolores sit.</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatibus rerum quod tempore ipsam incidunt?
+          Deserunt fugit odit possimus numquam repellat velit omnis incidunt voluptatibus eos, aspernatur assumenda
+          sint, dolores sit.</p>
+        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatibus rerum quod tempore ipsam incidunt?
+          Deserunt fugit odit possimus numquam repellat velit omnis incidunt voluptatibus eos, aspernatur assumenda
+          sint, dolores sit.</p>
+      </div>
+    </div>
+    <div class="bottum">
+      <span>BOTTUM</span>
+    </div>
+  </div>
+</body>
+
+</html>

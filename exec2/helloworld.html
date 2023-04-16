@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    html {
+      height: 100%;
+    }
+
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      height: 100%;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="container"></div>
+  <div class="sidebar">
+    <div id="radiobar" style="font-size: large;">
+      <legend>选择要去的食堂</legend>
+      <div>
+        <input type="radio" id="shiTang1" name="shiTang" value="一食堂" checked>
+        <label for="shiTang1">一食堂</label>
+      </div>
+
+      <div>
+        <input type="radio" id="shiTang2" name="shiTang" value="二食堂">
+        <label for="shiTang2">二食堂</label>
+      </div>
+
+      <div>
+        <input type="radio" id="shiTang3" name="shiTang" value="三食堂">
+        <label for="shiTang3">三食堂</label>
+      </div>
+      <legend>选择出行方式</legend>
+      <div>
+        <input type="radio" id="drive" name="way" value="drive" checked>
+        <label for="drive">驾车</label>
+      </div>
+      <div>
+        <input type="radio" id="ride" name="way" value="ride">
+        <label for="ride">骑行</label>
+      </div>
+      <div>
+        <input type="radio" id="walk" name="way" value="walk">
+        <label for="walk">步行</label>
+      </div>
+      <div style="align-items: center; text-align: center;">
+        <button style="background-color: cornflowerblue; color: white;margin-top: 10px;">导航</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script src="https://api.map.baidu.com/api?v=1.0&&type=webgl&ak=8zUhGsrheXieci9yYbuIRM822L26w8Xs"></script>
+<script>
+  let map = new BMapGL.Map("container")
+  let point = new BMapGL.Point(117.152827,34.220636);
+  map.centerAndZoom(point, 17)
+  map.enableScrollWheelZoom(true)
+
+  let pointShiTang1 = new BMapGL.Point(117.148412, 34.221449)
+  let pointShiTang2 = new BMapGL.Point(117.146302,34.219523)
+  let pointShiTang3 = new BMapGL.Point(117.147441, 34.217199)
+  let pointHC = new BMapGL.Point(117.158133,34.223314)
+
+  function CenterControl() {
+    this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+    this.defaultOffset = new BMapGL.Size(20, 20)
+  }
+
+  CenterControl.prototype = new BMapGL.Control()
+
+  CenterControl.prototype.initialize = (map) => {
+    //创建一个dom元素
+    var div = document.createElement('div');
+    //添加文字说明
+    div.appendChild(document.createTextNode('Center'));
+    // 设置样式
+    div.style.cursor = "pointer";
+    div.style.padding = "7px 10px";
+    div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+    div.style.borderRadius = "5px";
+    div.style.backgroundColor = "white";
+    // 绑定事件,点击一次放大两级
+    div.onclick = function (e) {
+      map.centerAndZoom(point, 17)
+    }
+    // 添加DOM元素到地图中
+    map.getContainer().appendChild(div);
+    // 将DOM元素返回
+    return div;
+  }
+
+  function TargetControl() {
+    this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+    this.defaultOffset = new BMapGL.Size(20, 20)
+  }
+
+  TargetControl.prototype = new BMapGL.Control()
+
+  TargetControl.prototype.initialize = (map) => {
+    //创建一个dom元素
+    var div = document.getElementById('radiobar');
+    // 设置样式
+    div.style.padding = "7px 10px";
+    div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+    div.style.borderRadius = "5px";
+    div.style.backgroundColor = "white";
+    // 绑定事件,根据不同的目标和方式绘制路线
+    document.querySelector("#radiobar button").onclick = () => {
+      map.clearOverlays()
+      let radioValueShiTang, radioValueWay
+      let radioShiTang = document.getElementsByName('shiTang')
+      let radioWay = document.getElementsByName('way')
+
+      for (let i = 0; i < radioShiTang.length; i++) {
+        if (radioShiTang[i].checked) {
+          radioValueShiTang = radioShiTang[i].value
+          break
+        }
+      }
+
+      switch (radioValueShiTang) {
+        case '一食堂':
+          point = pointShiTang1
+          break
+        case '二食堂':
+          point = pointShiTang2
+          break
+        case '三食堂':
+          point = pointShiTang3
+          break
+      }
+
+      for (let i = 0; i<radioWay.length; i++){
+        if(radioWay[i].checked){
+          radioValueWay = radioWay[i].value
+          break
+        }
+      }
+
+      switch (radioValueWay){
+        case 'drive': 
+           let driving = new BMapGL.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}})
+           driving.search(pointHC,point)
+           break
+        case 'ride': 
+           let riding = new BMapGL.RidingRoute(map, {renderOptions:{map: map, autoViewport: true}})
+           riding.search(pointHC,point)
+           break
+        case 'walk': 
+           let walking = new BMapGL.WalkingRoute(map, {renderOptions:{map: map, autoViewport: true}})
+           walking.search(pointHC,point)
+           break
+      }
+
+    }
+      // 添加DOM元素到地图中
+      map.getContainer().appendChild(div);
+      // 将DOM元素返回
+      return div;
+    }
+
+    let myCenterControl = new CenterControl();
+    let myTargetControl = new TargetControl();
+
+    map.addControl(myCenterControl)
+    map.addControl(myTargetControl)
+</script>
+
+</html>
