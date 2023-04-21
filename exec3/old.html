@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>切换地图底图</title>
+    <link rel="stylesheet" href="ol/ol.css" type="text/css" />
+    <script src="ol/ol.js"></script>
+    <link rel="stylesheet" href="switcher/ol-layerswitcher.css" type="text/css" />
+    <script src="switcher/ol-layerswitcher.js"></script>
+</head>
+
+<body>
+    <div style="position:fixed;z-index: 1;">
+        <label><input type="radio" name="mapType" value="baidu" checked onclick="updateMap()"> 百度地图</label>
+        <label><input type="radio" name="mapType" value="gaode" onclick="updateMap()"> 高德地图</label>
+        <label><input type="radio" name="mapType" value="osm" onclick="updateMap()"> OpenStreetMap</label>
+        <label><input type="radio" name="mapType" value="bing" onclick="updateMap()"> Bing Maps</label>
+    </div>
+    <div id="map" style="width: 100%; height: 100%;"></div>
+    <script>
+        var resolutions = [];
+        for (var i = 0; i < 19; i++) {
+            resolutions[i] = Math.pow(2, 18 - i);
+        }
+        let layers = [
+            new ol.layer.Tile({
+                title: "百度地图",
+                source: new ol.source.TileImage({
+                    projection: new ol.proj.get("EPSG:3857"),
+                    tileGrid: new ol.tilegrid.TileGrid({
+                        origin: [0, 0],
+                        resolutions: resolutions
+                    }),
+                    tileUrlFunction: function (tileCoord, pixelRatio, proj) {
+                        if (!tileCoord) {
+                            return "";
+                        }
+                        var z = tileCoord[0];
+                        var x = tileCoord[1];
+                        var y = tileCoord[2];
+                        if (x < 0) {
+                            x = "M" + (-x);
+                        }
+                        if (y < 0) {
+                            y = "M" + (-y);
+                        }
+                        return `http://online3.map.bdimg.com/onlinelabel/?qt=tile&x=${x}&y=${y}&z=${z}&styles=pl&udt=20151021&scaler=1&p=1`;
+                    }
+                }),
+                attributions: '© Baidu'
+            }),
+
+
+            new ol.layer.Tile({
+                visible: false,
+                title: "高德地图",
+                source: new ol.source.XYZ({
+                    url: 'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}', wrapX: false
+                })
+            }),
+
+            new ol.layer.Tile({
+                visible: false,
+                title: "OSM地图",
+                source: new ol.source.OSM()
+            }),
+
+            new ol.layer.Tile({
+                visible: false,
+                title: "Bing地图",
+                source: new ol.source.BingMaps({
+                    key: 'AjqG0Mio-IrkJ1cPEOTdlMMSztciZNz4ba8UuV5D7e996tHhUUrSBmF6uS3Lljiw',
+                    imagerySet: 'Road'
+                })
+            })
+
+        ]
+
+        var map = new ol.Map({
+            target: 'map',
+            layers: layers,
+            view: new ol.View({
+                center: ol.proj.fromLonLat([106, 36]),
+                zoom: 4
+            })
+        });
+
+
+
+
+        function updateMap() {
+            var radioButtons = document.getElementsByName('mapType');
+            for (var i = 0; i < radioButtons.length; i++) {
+                if (radioButtons[i].checked) {
+                    var value = radioButtons[i].value;
+                    if (value === 'baidu') {
+                        layers[0].setVisible(true);
+                        layers[1].setVisible(false);
+                        layers[2].setVisible(false);
+                        layers[3].setVisible(false);
+                    } else if (value === 'gaode') {
+                        layers[0].setVisible(false);
+                        layers[1].setVisible(true);
+                        layers[2].setVisible(false);
+                        layers[3].setVisible(false);
+                    } else if (value === 'osm') {
+                        layers[0].setVisible(false);
+                        layers[1].setVisible(false);
+                        layers[2].setVisible(true);
+                        layers[3].setVisible(false);
+                    } else if (value === 'bing') {
+                        layers[0].setVisible(false);
+                        layers[1].setVisible(false);
+                        layers[2].setVisible(false);
+                        layers[3].setVisible(true);
+                    }
+                    break;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

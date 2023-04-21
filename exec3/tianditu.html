@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载天地图</title>
+    <link rel="stylesheet" href="ol/ol.css" type="text/css" />
+    <script src="ol/ol.js"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        var map = new ol.Map({
+            // 地图容器div层的ID
+            target: 'map',
+            // 在地图容器中加载的图层
+            layers: [
+                // 加载瓦片图层数据
+                new ol.layer.Tile({
+                    title: "天地图矢量图层",
+                    source: new ol.source.XYZ({
+                        url: "http://t0.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk=2b463cacc6c97923e0e0639d5eaa026b", wrapX: false
+                    })
+                }),
+                new ol.layer.Tile({
+                    title: "天地图矢量注记图层",
+                    source: new ol.source.XYZ({
+                        url: "http://t0.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk=2b463cacc6c97923e0e0639d5eaa026b", wrapX: false
+                    })
+                })
+            ],
+            // 地图视图的设置
+            view:new ol.View({
+                // 地图初始点
+                center:[0,0],
+                // 地图初始显示级别
+                zoom:3,
+                // 设置投影坐标系
+                projection:"EPSG:4326"
+            })
+
+        })
+
+    </script>
+</body>
+
+</html>

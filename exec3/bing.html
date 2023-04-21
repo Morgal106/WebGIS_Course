@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="ol/ol.css" type="text/css" />
+    <script src="ol/ol.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // 设置Bing地图请求的key
+        var key='Ai-NFfbLkvt7CAvKU83CVVRWtQBbsR2V0rDb3XJWPM65HWBuYMLHsbXEhY7VSyPu';
+        // 实例化瓦片图层数据
+        var roads=new ol.layer.Tile({
+            // 设置数据源为Bing地图
+            source:new ol.source.BingMaps({key:key,imagerySet:"Road"})
+        });
+        // 实例化map对象并加载地图
+        var map=new ol.Map({
+            target:'map',
+            layers:[roads],
+            // 地图视图设置
+            view:new ol.View({
+                center:ol.proj.fromLonLat([-109,46.5]),
+                zoom:6
+            })
+        })
+    </script>
+</body>
+</html>
