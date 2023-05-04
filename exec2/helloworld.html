@@ -27,7 +27,7 @@
 <body>
   <div id="container"></div>
   <div id="search">
-    <input type="text" name="search" id="searchbar">
+    <input type="text" name="search" id="searchbar" placeholder="请输入地点">
     <button type="reset" onclick="document.getElementById('searchbar').value=''">清空</button>
     <button id="search-button">搜索</button>
   </div>
@@ -78,33 +78,6 @@
   let pointShiTang3 = new BMapGL.Point(117.147441, 34.217199)
   let pointHC = new BMapGL.Point(117.158133, 34.223314)
 
-  function CenterControl() {
-    this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
-    this.defaultOffset = new BMapGL.Size(20, 20)
-  }
-
-  CenterControl.prototype = new BMapGL.Control()
-
-  CenterControl.prototype.initialize = (map) => {
-    //创建一个dom元素
-    var div = document.createElement('div');
-    //添加文字说明
-    div.appendChild(document.createTextNode('Center'));
-    // 设置样式
-    div.style.cursor = "pointer";
-    div.style.padding = "7px 10px";
-    div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
-    div.style.borderRadius = "5px";
-    div.style.backgroundColor = "white";
-    // 绑定事件,点击一次放大两级
-    div.onclick = function (e) {
-      map.centerAndZoom(point, 17)
-    }
-    // 添加DOM元素到地图中
-    map.getContainer().appendChild(div);
-    // 将DOM元素返回
-    return div;
-  }
 
   function TargetControl() {
     this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
@@ -177,28 +150,31 @@
   }
 
   function SearchControl() {
-    this.defaultAnchor = BMAP_ANCHOR_BOTTOM_RIGHT;
+    this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
     this.defaultOffset = new BMapGL.Size(20, 20)
   }
 
   SearchControl.prototype = new BMapGL.Control();
   SearchControl.prototype.initialize = (map) => {
-    var div = document.getElementById('radiobar');
+    var div = document.getElementById('search');
     div.style.padding = "7px 10px";
     div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
     div.style.borderRadius = "5px";
     div.style.backgroundColor = "white";
-    var local = new BMap.LocalSearch(map, {
-      renderOptions: { map: map }
-    });
-    var pStart = new BMap.Point(116.274625, 39.961627);
-    var pEnd = new BMap.Point(116.367474, 39.988609);
-    var bs = new BMap.Bounds(pStart, pEnd);   //自己规定范围
-    local.searchInBounds("银行", bs);
+    document.getElementById("search-button").onclick = () => {
+      var local = new BMap.LocalSearch(map, {
+        renderOptions: { map: map }
+      });
+      var pStart = new BMap.Point(117.143467, 34.229263);
+      var pEnd = new BMap.Point(117.160859, 34.212427);
+      var bs = new BMap.Bounds(pStart, pEnd);   //自己规定范围
+      local.searchInBounds(document.getElementById("searchbar").value, bs);
+    }
+    return div
   }
 
-  map.addControl(new CenterControl())
   map.addControl(new TargetControl())
+  map.addControl(new SearchControl())
 </script>
 
 </html>
