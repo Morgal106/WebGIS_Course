@@ -26,39 +26,42 @@
 
 <body>
   <div id="container"></div>
-  <div class="sidebar">
-    <div id="radiobar" style="font-size: large;">
-      <legend>选择要去的食堂</legend>
-      <div>
-        <input type="radio" id="shiTang1" name="shiTang" value="一食堂" checked>
-        <label for="shiTang1">一食堂</label>
-      </div>
+  <div id="search">
+    <input type="text" name="search" id="searchbar">
+    <button type="reset" onclick="document.getElementById('searchbar').value=''">清空</button>
+    <button id="search-button">搜索</button>
+  </div>
+  <div id="radiobar" style="font-size: large;">
+    <legend>选择要去的食堂</legend>
+    <div>
+      <input type="radio" id="shiTang1" name="shiTang" value="一食堂" checked>
+      <label for="shiTang1">一食堂</label>
+    </div>
 
-      <div>
-        <input type="radio" id="shiTang2" name="shiTang" value="二食堂">
-        <label for="shiTang2">二食堂</label>
-      </div>
+    <div>
+      <input type="radio" id="shiTang2" name="shiTang" value="二食堂">
+      <label for="shiTang2">二食堂</label>
+    </div>
 
-      <div>
-        <input type="radio" id="shiTang3" name="shiTang" value="三食堂">
-        <label for="shiTang3">三食堂</label>
-      </div>
-      <legend>选择出行方式</legend>
-      <div>
-        <input type="radio" id="drive" name="way" value="drive" checked>
-        <label for="drive">驾车</label>
-      </div>
-      <div>
-        <input type="radio" id="ride" name="way" value="ride">
-        <label for="ride">骑行</label>
-      </div>
-      <div>
-        <input type="radio" id="walk" name="way" value="walk">
-        <label for="walk">步行</label>
-      </div>
-      <div style="align-items: center; text-align: center;">
-        <button style="background-color: cornflowerblue; color: white;margin-top: 10px;">导航</button>
-      </div>
+    <div>
+      <input type="radio" id="shiTang3" name="shiTang" value="三食堂">
+      <label for="shiTang3">三食堂</label>
+    </div>
+    <legend>选择出行方式</legend>
+    <div>
+      <input type="radio" id="drive" name="way" value="drive" checked>
+      <label for="drive">驾车</label>
+    </div>
+    <div>
+      <input type="radio" id="ride" name="way" value="ride">
+      <label for="ride">骑行</label>
+    </div>
+    <div>
+      <input type="radio" id="walk" name="way" value="walk">
+      <label for="walk">步行</label>
+    </div>
+    <div style="align-items: center; text-align: center;">
+      <button style="background-color: cornflowerblue; color: white;margin-top: 10px;">导航</button>
     </div>
   </div>
 </body>
@@ -66,14 +69,14 @@
 <script src="https://api.map.baidu.com/api?v=1.0&&type=webgl&ak=8zUhGsrheXieci9yYbuIRM822L26w8Xs"></script>
 <script>
   let map = new BMapGL.Map("container")
-  let point = new BMapGL.Point(117.152827,34.220636);
+  let point = new BMapGL.Point(117.152827, 34.220636);
   map.centerAndZoom(point, 17)
   map.enableScrollWheelZoom(true)
 
   let pointShiTang1 = new BMapGL.Point(117.148412, 34.221449)
-  let pointShiTang2 = new BMapGL.Point(117.146302,34.219523)
+  let pointShiTang2 = new BMapGL.Point(117.146302, 34.219523)
   let pointShiTang3 = new BMapGL.Point(117.147441, 34.217199)
-  let pointHC = new BMapGL.Point(117.158133,34.223314)
+  let pointHC = new BMapGL.Point(117.158133, 34.223314)
 
   function CenterControl() {
     this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
@@ -144,40 +147,41 @@
           break
       }
 
-      for (let i = 0; i<radioWay.length; i++){
-        if(radioWay[i].checked){
+      for (let i = 0; i < radioWay.length; i++) {
+        if (radioWay[i].checked) {
           radioValueWay = radioWay[i].value
           break
         }
       }
 
-      switch (radioValueWay){
-        case 'drive': 
-           let driving = new BMapGL.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}})
-           driving.search(pointHC,point)
-           break
-        case 'ride': 
-           let riding = new BMapGL.RidingRoute(map, {renderOptions:{map: map, autoViewport: true}})
-           riding.search(pointHC,point)
-           break
-        case 'walk': 
-           let walking = new BMapGL.WalkingRoute(map, {renderOptions:{map: map, autoViewport: true}})
-           walking.search(pointHC,point)
-           break
+      switch (radioValueWay) {
+        case 'drive':
+          let driving = new BMapGL.DrivingRoute(map, { renderOptions: { map: map, autoViewport: true } })
+          driving.search(pointHC, point)
+          break
+        case 'ride':
+          let riding = new BMapGL.RidingRoute(map, { renderOptions: { map: map, autoViewport: true } })
+          riding.search(pointHC, point)
+          break
+        case 'walk':
+          let walking = new BMapGL.WalkingRoute(map, { renderOptions: { map: map, autoViewport: true } })
+          walking.search(pointHC, point)
+          break
       }
 
     }
-      // 添加DOM元素到地图中
-      map.getContainer().appendChild(div);
-      // 将DOM元素返回
-      return div;
-    }
+    // 添加DOM元素到地图中
+    map.getContainer().appendChild(div);
+    // 将DOM元素返回
+    return div;
+  }
 
-    let myCenterControl = new CenterControl();
-    let myTargetControl = new TargetControl();
+  function SearchControl() {
 
-    map.addControl(myCenterControl)
-    map.addControl(myTargetControl)
+  }
+
+  map.addControl(new CenterControl())
+  map.addControl(new TargetControl())
 </script>
 
 </html>
