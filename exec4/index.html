@@ -1,12 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="./ol/ol.js"></script>
+  <style>
+    @import url(./ol/ol.css);
+  </style>
 </head>
+
 <body>
-  
+  <div id="map"></div>
+  <script>
+    let shitangVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson'
+      })
+      ,
+      title: '食堂',
+    })
+    let shuiVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E6%B0%B4%E4%BD%93&maxFeatures=50&outputFormat=application%2Fjson'
+      })
+      ,
+      title: '水体',
+    })
+    let jiaoxuelouVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E6%95%99%E5%AD%A6%E6%A5%BC&maxFeatures=50&outputFormat=application%2Fjson'
+      })
+      ,
+      title: '教学楼',
+    })
+    let susheVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E5%AE%BF%E8%88%8D%E6%A5%BC&maxFeatures=50&outputFormat=application%2Fjson'
+      })
+      ,
+      title: '宿舍',
+    })
+
+    let osmmap = new ol.layer.Tile({
+      source: new ol.source.OSM()
+    })
+
+    let map = new ol.Map({
+      target: 'map',
+      layers: [
+        osmmap,
+        shitangVectorLayer,
+        susheVectorLayer,
+        shuiVectorLayer,
+        jiaoxuelouVectorLayer,
+      ],
+      view: new ol.View({
+        center: [13039865.644268, 4057702.702800],
+        zoom: 16
+      })
+    })
+    // 添加一个绘制的线使用的layer
+    var lineLayer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: 'blue',
+          size: 6
+        })
+      })
+    })
+
+    map.addLayer(lineLayer);
+    var lineDraw = new ol.interaction.Draw({
+      type: 'LineString',
+      source: lineLayer.getSource(),    // 注意设置source，这样绘制好的线，就会添加到这个source里
+      style: new ol.style.Style({            // 设置绘制时的样式
+        stroke: new ol.style.Stroke({
+          color: '#009933',
+          size: 1
+        })
+      }),
+      maxPoints: 4    // 限制不超过4个点
+    });
+
+    // 监听线绘制结束事件，获取坐标
+    lineDraw.on('drawend', function (event) {
+      let points = event.feature.getGeometry().getCoordinates()   // event.feature 就是当前绘制完成的线的Feature
+      let cql = `CQLFILTER=BBOX(the_geom, POLYGON((${points[0][0]} ${points[0][1]}, ${points[1][0]} ${points[1][1]}, ${points[2][0]} ${points[2][1]}, ${points[3][0]} ${points[3][1]})))`
+      map.addLayer(
+        new ol.layer.Vector({
+          source: new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
+          }),
+          title: '食堂',
+          style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+              color: 'red',
+              size: 6
+            })
+          })
+        }))
+      map.addLayer(
+        new ol.layer.Vector({
+          source: new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
+          }),
+          title: '食堂',
+        }))
+      map.addLayer(
+        new ol.layer.Vector({
+          source: new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
+          }),
+          title: '食堂',
+        }))
+      map.addLayer(
+        new ol.layer.Vector({
+          source: new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
+          }),
+          title: '食堂',
+        }))
+    });
+
+    map.addInteraction(lineDraw);
+  </script>
 </body>
+
 </html>
