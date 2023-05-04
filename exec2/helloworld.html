@@ -177,7 +177,24 @@
   }
 
   function SearchControl() {
+    this.defaultAnchor = BMAP_ANCHOR_BOTTOM_RIGHT;
+    this.defaultOffset = new BMapGL.Size(20, 20)
+  }
 
+  SearchControl.prototype = new BMapGL.Control();
+  SearchControl.prototype.initialize = (map) => {
+    var div = document.getElementById('radiobar');
+    div.style.padding = "7px 10px";
+    div.style.boxShadow = "0 2px 6px 0 rgba(27, 142, 236, 0.5)";
+    div.style.borderRadius = "5px";
+    div.style.backgroundColor = "white";
+    var local = new BMap.LocalSearch(map, {
+      renderOptions: { map: map }
+    });
+    var pStart = new BMap.Point(116.274625, 39.961627);
+    var pEnd = new BMap.Point(116.367474, 39.988609);
+    var bs = new BMap.Bounds(pStart, pEnd);   //自己规定范围
+    local.searchInBounds("银行", bs);
   }
 
   map.addControl(new CenterControl())
