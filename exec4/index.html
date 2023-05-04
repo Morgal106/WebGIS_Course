@@ -93,14 +93,13 @@
     // 监听线绘制结束事件，获取坐标
     lineDraw.on('drawend', function (event) {
       let points = event.feature.getGeometry().getCoordinates()   // event.feature 就是当前绘制完成的线的Feature
-      let cql = `CQLFILTER=BBOX(the_geom, POLYGON((${points[0][0]} ${points[0][1]}, ${points[1][0]} ${points[1][1]}, ${points[2][0]} ${points[2][1]}, ${points[3][0]} ${points[3][1]})))`
+      let cql = `&CQLFILTER=BBOX(the_geom, POLYGON((${points[0][0]} ${points[0][1]}, ${points[1][0]} ${points[1][1]}, ${points[2][0]} ${points[2][1]}, ${points[3][0]} ${points[3][1]})))`
       map.addLayer(
         new ol.layer.Vector({
           source: new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
           }),
-          title: '食堂',
           style: new ol.style.Style({
             stroke: new ol.style.Stroke({
               color: 'red',
@@ -114,7 +113,6 @@
             format: new ol.format.GeoJSON(),
             url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
           }),
-          title: '食堂',
         }))
       map.addLayer(
         new ol.layer.Vector({
@@ -122,7 +120,6 @@
             format: new ol.format.GeoJSON(),
             url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
           }),
-          title: '食堂',
         }))
       map.addLayer(
         new ol.layer.Vector({
@@ -130,7 +127,6 @@
             format: new ol.format.GeoJSON(),
             url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
           }),
-          title: '食堂',
         }))
     });
 
