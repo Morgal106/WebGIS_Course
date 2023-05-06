@@ -28,7 +28,7 @@
   <div id="container"></div>
   <div id="search">
     <input type="text" name="search" id="searchbar" placeholder="请输入地点">
-    <button type="reset" onclick="document.getElementById('searchbar').value=''">清空</button>
+    <button id="reset-button" type="reset">清空</button>
     <button id="search-button">搜索</button>
   </div>
   <div id="radiobar" style="font-size: large;">
@@ -69,7 +69,7 @@
 <script src="https://api.map.baidu.com/api?v=1.0&&type=webgl&ak=8zUhGsrheXieci9yYbuIRM822L26w8Xs"></script>
 <script>
   let map = new BMapGL.Map("container")
-  let point = new BMapGL.Point(117.152827, 34.220636);
+  let point = new BMapGL.Point(117.152942,34.22118);
   map.centerAndZoom(point, 17)
   map.enableScrollWheelZoom(true)
 
@@ -77,6 +77,12 @@
   let pointShiTang2 = new BMapGL.Point(117.146302, 34.219523)
   let pointShiTang3 = new BMapGL.Point(117.147441, 34.217199)
   let pointHC = new BMapGL.Point(117.158133, 34.223314)
+
+  document.getElementById("reset-button").onclick = () => {
+    document.getElementById('searchbar').value = '';
+    map.clearOverlays()
+    map.centerAndZoom(point, 17)
+  }
 
 
   function TargetControl() {
@@ -162,15 +168,16 @@
     div.style.borderRadius = "5px";
     div.style.backgroundColor = "white";
     document.getElementById("search-button").onclick = () => {
-      var local = new BMap.LocalSearch(map, {
+      map.clearOverlays()
+      var local = new BMapGL.LocalSearch(map, {
         renderOptions: { map: map }
       });
-      var pStart = new BMap.Point(117.143467, 34.229263);
-      var pEnd = new BMap.Point(117.160859, 34.212427);
-      var bs = new BMap.Bounds(pStart, pEnd);   //自己规定范围
-      local.searchInBounds(document.getElementById("searchbar").value, bs);
+      var pStart = new BMapGL.Point(117.143467, 34.212427);
+      var pEnd = new BMapGL.Point(117.160859, 34.229263);
+      var bs = new BMapGL.Bounds(pStart, pEnd);   //自己规定范围
+      local.searchInBounds(document.getElementById('searchbar').value, bs);
     }
-    return div
+    return div;
   }
 
   map.addControl(new TargetControl())
