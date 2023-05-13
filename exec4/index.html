@@ -7,13 +7,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="./ol/ol.js"></script>
+  <script src="https://unpkg.com/ol-layerswitcher@4.1.1"></script>
+  <link rel="stylesheet" href="https://unpkg.com/ol-layerswitcher@4.1.1/dist/ol-layerswitcher.css" />
   <style>
     @import url(./ol/ol.css);
+  </style>
+  <style>
+    @import url(./exam.css);
   </style>
 </head>
 
 <body>
   <div id="map"></div>
+  <div class="result-container">
+    <table> </table>
+  </div>
+  <div class="toolbar-container">
+    <input type="text" id="property-inp">
+    <button class="property-query">属性查询</button>
+    <button onclick="addInteraction()">空间查询</button>
+    <button onclick="clearInteraction();clearQuery()">清空查询结果</button><br>
+    <input type="checkbox" name="" id="layer-0" class="layer-checkbox" value="layer-0"> <label for="layer-0">layer-0</label>
+    <input type="checkbox" name="" id="layer-1" class="layer-checkbox" value="layer-1"> <label for="layer-1">layer-1</label>
+    <input type="checkbox" name="" id="layer-2" class="layer-checkbox" value="layer-2"> <label for="layer-2">layer-2</label>
+    <input type="checkbox" name="" id="layer-3" class="layer-checkbox" value="layer-3"> <label for="layer-3">layer-3</label>
+  </div>
   <script>
     let shitangVectorLayer = new ol.layer.Vector({
       source: new ol.source.Vector({
@@ -66,71 +84,170 @@
         zoom: 16
       })
     })
-    // 添加一个绘制的线使用的layer
-    var lineLayer = new ol.layer.Vector({
-      source: new ol.source.Vector(),
+
+
+    // 绘图图层
+    var drawSource = new ol.source.Vector({ wrapX: false });
+    var drawVector = new ol.layer.Vector({
+      source: drawSource
+    });
+    map.addLayer(drawVector);
+    // 绘制多边形
+    var feature;
+    function addInteraction() {
+      var draw = new ol.interaction.Draw({
+        source: drawSource,
+        type: "Polygon"
+      });
+      map.addInteraction(draw);
+      draw.on("drawend", function (evt) {
+        drawSource.clear();
+        feature = evt.feature;
+        map.removeInteraction(draw);
+        spatialQuery();
+      });
+    }
+
+    // 清除多边形
+    function clearInteraction() {
+      drawSource.clear();
+    }
+    // 清除查询结果
+    function clearQuery() {
+      spaceSource.clear();
+      document.querySelector(".result-container").style.display = "none";
+    }
+
+    // 查询结果显示图层
+    var spaceSource = new ol.source.Vector();
+    var spaceVector = new ol.layer.Vector({
+      source: spaceSource,
       style: new ol.style.Style({
         stroke: new ol.style.Stroke({
-          color: 'blue',
-          size: 6
+          color: "rgba(0, 0, 255, 1.0)",
+          width: 2
         })
       })
-    })
+    });
+    map.addLayer(spaceVector);
 
-    map.addLayer(lineLayer);
-    var lineDraw = new ol.interaction.Draw({
-      type: 'LineString',
-      source: lineLayer.getSource(),    // 注意设置source，这样绘制好的线，就会添加到这个source里
-      style: new ol.style.Style({            // 设置绘制时的样式
-        stroke: new ol.style.Stroke({
-          color: '#009933',
-          size: 1
+    // 空间查询
+    function spatialQuery() {
+      var featureRequest = new ol.format.WFS().writeGetFeature({
+        srsName: "EPSG:3857", // 坐标系
+        featureNS: "11111", // 命名空间
+        featurePrefix: "test", // 工作区
+        featureTypes: ["食堂"], // 图层名
+        outputFormat: "application/json",
+        filter: ol.format.filter.intersects("the_geom", feature.getGeometry(), "EPSG:3857")
+      });
+
+      fetch("http://localhost:8080/geoserver/wfs", {
+        method: "POST",
+        body: new XMLSerializer().serializeToString(featureRequest)
+      })
+        .then(function (response) {
+          return response.json();
         })
-      }),
-      maxPoints: 4    // 限制不超过4个点
+        .then(function (json) {
+          showResultList(json);
+          var features = new ol.format.GeoJSON().readFeatures(json);
+          if (features.length == 0) {
+            alert("没有数据");
+          } else {
+            spaceSource.clear();
+            spaceSource.addFeatures(features);
+            // map.getView().fit(spaceSource.getExtent()); // 视图缩放至查询结果
+          }
+        });
+    }
+
+    // 展示空间查询结果列表
+    function showResultList(list) {
+      const { features } = list;
+      const propertyList = features.map(item => ({
+        id: item.id,
+        name: item.properties.NAME,
+        area: item.properties.SHAPE_Area
+      }));
+      const tableDOM = document.querySelector(".result-container table");
+      tableDOM.innerHTML = `
+          <tr class="head">
+					  <th>id</th>
+					  <th>名称</th>
+					  <th>面积</th>
+				  </tr>
+        `;
+      document.querySelector(".result-container").style.display = "block";
+      propertyList.forEach(item => {
+        const trDOM = document.createElement("tr");
+        trDOM.innerHTML = `
+            <tr>
+					    <td>${item.id}</td>
+					    <td>${item.name}</td>
+					    <td>${item.area}</td>
+				  </tr>
+          `;
+        tableDOM.appendChild(trDOM);
+      });
+    }
+
+    document.querySelector(".result-close").addEventListener("click", () => {
+      document.querySelector(".result-container").style.display = "none";
     });
 
-    // 监听线绘制结束事件，获取坐标
-    lineDraw.on('drawend', function (event) {
-      let points = event.feature.getGeometry().getCoordinates()   // event.feature 就是当前绘制完成的线的Feature
-      let cql = `&CQLFILTER=BBOX(the_geom, POLYGON((${points[0][0]} ${points[0][1]}, ${points[1][0]} ${points[1][1]}, ${points[2][0]} ${points[2][1]}, ${points[3][0]} ${points[3][1]})))`
-      map.addLayer(
-        new ol.layer.Vector({
-          source: new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
-          }),
-          style: new ol.style.Style({
-            stroke: new ol.style.Stroke({
-              color: 'red',
-              size: 6
-            })
-          })
-        }))
-      map.addLayer(
-        new ol.layer.Vector({
-          source: new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
-          }),
-        }))
-      map.addLayer(
-        new ol.layer.Vector({
-          source: new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
-          }),
-        }))
-      map.addLayer(
-        new ol.layer.Vector({
-          source: new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: 'http://localhost:8080/geoserver/test/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=test%3A%E9%A3%9F%E5%A0%82&maxFeatures=50&outputFormat=application%2Fjson' + cql
-          }),
-        }))
-    });
+    // 属性查询
+    function propertyQuery(queryStr) {
+      var featureRequest = new ol.format.WFS().writeGetFeature({
+        srsName: "EPSG:3857", // 坐标系
+        featureNS: "11111", // 命名空间
+        featurePrefix: "test", // 工作区
+        featureTypes: ["食堂"], // 图层名
+        outputFormat: "application/json",
+        filter: ol.format.filter.like("NAME", `*${queryStr}*`)
+      });
 
-    map.addInteraction(lineDraw);
+      fetch("http://localhost:8182/geoserver/wfs", {
+        method: "POST",
+        body: new XMLSerializer().serializeToString(featureRequest)
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (json) {
+          var features = new ol.format.GeoJSON().readFeatures(json);
+          spaceSource.clear();
+          spaceSource.addFeatures(features);
+        });
+    }
+    document.querySelector(".property-query").addEventListener("click", () => {
+      const str = document.querySelector("#property-inp").value;
+      propertyQuery(str);
+    });
+    var layerSwitcher = new ol.control.LayerSwitcher({
+      tipLabel: 'Légende', // Optional label for button
+      groupSelectStyle: 'children' // Can be 'children' [default], 'group' or 'none'
+    });
+    map.addControl(layerSwitcher);
+    document.querySelectorAll(".layer-checkbox").forEach(item => {
+      item.addEventListener("click", e => {
+        const { id, checked } = e.target;
+        switch (id) {
+          case "layer-0":
+            shitangVectorLayer.set("visible", checked);
+            break;
+          case "layer-1":
+            susheVectorLayer.set("visible", checked);
+            break;
+          case "layer-2":
+            shuiVectorLayer.set("visible", checked);
+            break;
+          case "layer-3":
+            jiaoxuelouVectorLayer.set("visible", checked);
+            break;
+        }
+      });
+    });
   </script>
 </body>
 
